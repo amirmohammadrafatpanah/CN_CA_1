@@ -108,6 +108,63 @@ Defines the UI, including input fields and call controls.
 
 ---
 
+
+
+Certainly! Here’s a more concise project report focusing on the signaling server component.
+
+---
+
+### Signaling Server for WebRTC Communication
+
+#### Overview
+This part of the project involves building a signaling server using **Node.js**, **Express**, and **Socket.IO** to facilitate WebRTC connections. The signaling server acts as a communication bridge, helping peers exchange the necessary connection details (SDP offers, answers, and ICE candidates) to establish a direct connection for real-time audio or video streaming.
+
+#### Key Components
+
+1. **Express Server Setup**
+   - We initialize an HTTP server using Express, which can serve static files if needed. The server listens on port `3000` and can easily be scaled to serve other endpoints in the future.
+
+2. **Socket.IO for Real-Time Communication**
+   - **Socket.IO** is used to handle real-time, event-based communication between clients and the server.
+   - Upon connection, each client is assigned a unique `socket.id`, which allows us to manage individual clients and rooms.
+
+3. **Room-Based Communication**
+   - Users can join specific rooms by emitting a `joinRoom` event with a `roomId`. This allows for isolated communication channels, ensuring only users within the same room can exchange signaling data.
+
+4. **Signaling Events**
+   - **SDP Offer/Answer**: The server relays `offer` and `answer` messages between users to negotiate WebRTC connections.
+   - **ICE Candidate Exchange**: The server also relays ICE candidates, which are essential for NAT traversal and establishing stable P2P connections.
+
+   Example event handling for an SDP offer:
+   ```javascript
+   socket.on('offer', (data) => {
+       const { roomId, sdp } = data;
+       socket.to(roomId).emit('offer', { sdp, sender: socket.id });
+       console.log(`Offer sent from ${socket.id} to room ${roomId}`);
+   });
+   ```
+
+5. **Disconnection Handling**
+   - The server logs when users disconnect, which can be extended to notify other users in the room if needed.
+
+#### Key Benefits and Challenges
+
+- **Benefits**:
+  - **Efficient Room-Based Signaling**: By using rooms, the server can handle multiple separate sessions simultaneously.
+  - **Low Latency**: Socket.IO provides low-latency communication, allowing quick setup of WebRTC connections.
+
+- **Challenges**:
+  - **NAT Traversal**: Without a TURN server, some connections might fail in strict network environments.
+  - **Security**: This basic setup lacks authentication and encryption; for production, adding secure WebSocket (wss) and authentication is recommended.
+
+#### Conclusion
+This signaling server successfully handles the necessary WebRTC signaling for P2P connections, enabling efficient room-based signaling with minimal latency. Future improvements include adding TURN server support for better NAT traversal and enhancing security with authentication and SSL.
+
+--- 
+
+
+
+---
 ## Challenges and Solutions
 
 During development, several technical challenges required dedicated solutions. Below are the primary issues encountered and how they were addressed.
@@ -164,4 +221,8 @@ During development, several technical challenges required dedicated solutions. B
 This project successfully achieves real-time audio transmission with clear and reliable audio playback. By addressing challenges related to library setup, audio format consistency, and network connectivity, the application provides stable WebRTC connections and high-quality audio streaming.
 
 --- 
+
+
+
+
 
